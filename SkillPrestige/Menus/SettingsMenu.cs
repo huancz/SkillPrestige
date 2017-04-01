@@ -21,6 +21,7 @@ namespace SkillPrestige.Menus
         private Checkbox _resetRecipesCheckbox;
         private IntegerEditor _tierOneCostEditor;
         private IntegerEditor _tierTwoCostEditor;
+        private Checkbox _noSacrificeModeCheckbox;
 
         public SettingsMenu(Rectangle bounds) : base(bounds.X, bounds.Y, bounds.Width, bounds.Height, true)
         {
@@ -37,6 +38,8 @@ namespace SkillPrestige.Menus
             Logger.LogVerbose("Settings menu - Registering mouse events...");
             Mouse.MouseMoved += _resetRecipesCheckbox.CheckForMouseHover;
             Mouse.MouseClicked += _resetRecipesCheckbox.CheckForMouseClick;
+            Mouse.MouseMoved += _noSacrificeModeCheckbox.CheckForMouseHover;
+            Mouse.MouseClicked += _noSacrificeModeCheckbox.CheckForMouseClick;
             _tierOneCostEditor.RegisterMouseEvents();
             _tierTwoCostEditor.RegisterMouseEvents();
             Logger.LogVerbose("Settings menu - Mouse events registered.");
@@ -48,6 +51,8 @@ namespace SkillPrestige.Menus
             if (!_buttonClickRegistered) return;
             Mouse.MouseMoved -= _resetRecipesCheckbox.CheckForMouseHover;
             Mouse.MouseClicked -= _resetRecipesCheckbox.CheckForMouseClick;
+            Mouse.MouseMoved -= _noSacrificeModeCheckbox.CheckForMouseHover;
+            Mouse.MouseClicked -= _noSacrificeModeCheckbox.CheckForMouseClick;
             _tierOneCostEditor.DeregisterMouseEvents();
             _tierTwoCostEditor.DeregisterMouseEvents();
             _buttonClickRegistered = false;
@@ -65,7 +70,9 @@ namespace SkillPrestige.Menus
             var resetRecipeCheckboxBounds = new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 3, yPositionOnScreen + (int)Math.Floor(Game1.tileSize * 3.5), 9*Game1.pixelZoom, 9 * Game1.pixelZoom);
             _resetRecipesCheckbox = new Checkbox(PerSaveOptions.Instance.ResetRecipesOnPrestige, "Reset Recipes upon prestige.", resetRecipeCheckboxBounds, ChangeRecipeReset);
             var padding = 4*Game1.pixelZoom;
-            var tierOneEditorLocation = new Vector2(resetRecipeCheckboxBounds.X, resetRecipeCheckboxBounds.Y + resetRecipeCheckboxBounds.Height + padding);
+            var noSacrificeModeCheckboxBounds = new Rectangle(resetRecipeCheckboxBounds.X, resetRecipeCheckboxBounds.Y + resetRecipeCheckboxBounds.Height + padding, 9 * Game1.pixelZoom, 9 * Game1.pixelZoom);
+            _noSacrificeModeCheckbox = new Checkbox(PerSaveOptions.Instance.NoSacrificeMode, "Allow prestige only from reserve experience", noSacrificeModeCheckboxBounds, ChangeNoSacrificeMode);
+            var tierOneEditorLocation = new Vector2(noSacrificeModeCheckboxBounds.X, noSacrificeModeCheckboxBounds.Y + noSacrificeModeCheckboxBounds.Height + padding);
             _tierOneCostEditor = new IntegerEditor("Cost of Tier 1 Prestige", PerSaveOptions.Instance.CostOfTierOnePrestige, 1, 100, tierOneEditorLocation, ChangeTierOneCost);
             var tierTwoEditorLocation = tierOneEditorLocation;
             tierTwoEditorLocation.Y += _tierOneCostEditor.Bounds.Height + padding;
@@ -75,6 +82,12 @@ namespace SkillPrestige.Menus
         private static void ChangeRecipeReset(bool resetRecipes)
         {
             PerSaveOptions.Instance.ResetRecipesOnPrestige = resetRecipes;
+            PerSaveOptions.Save();
+        }
+
+        private static void ChangeNoSacrificeMode(bool noSacrifice)
+        {
+            PerSaveOptions.Instance.NoSacrificeMode = noSacrifice;
             PerSaveOptions.Save();
         }
 
@@ -106,6 +119,7 @@ namespace SkillPrestige.Menus
             DrawHeader(spriteBatch);
             if (!_inputInitiated) InitiateInput();
             _resetRecipesCheckbox.Draw(spriteBatch);
+            _noSacrificeModeCheckbox.Draw(spriteBatch);
             _tierOneCostEditor.Draw(spriteBatch);
             _tierTwoCostEditor.Draw(spriteBatch);
             Mouse.DrawCursor(spriteBatch);

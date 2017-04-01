@@ -47,9 +47,12 @@ namespace SkillPrestige.Menus.Dialogs
             if (_buttonClickRegistered) return;
             _buttonClickRegistered = true;
             Logger.LogVerbose("Warning Dialog - Registering Mouse Events...");
-            Mouse.MouseMoved += _okayButton.CheckForMouseHover;
+            if (OnOkay != null)
+            {
+                Mouse.MouseMoved += _okayButton.CheckForMouseHover;
+                Mouse.MouseClicked += _okayButton.CheckForMouseClick;
+            }
             Mouse.MouseMoved += _cancelButton.CheckForMouseHover;
-            Mouse.MouseClicked += _okayButton.CheckForMouseClick;
             Mouse.MouseClicked += _cancelButton.CheckForMouseClick;
             Logger.LogVerbose("Warning Dialog - Mouse Events Registered.");
         }
@@ -58,9 +61,12 @@ namespace SkillPrestige.Menus.Dialogs
         {
             if (!_buttonClickRegistered) return;
             Logger.LogVerbose("Warning Dialog - Deregistering Mouse Events.");
-            Mouse.MouseMoved -= _okayButton.CheckForMouseHover;
+            if (OnOkay != null)
+            {
+                Mouse.MouseMoved -= _okayButton.CheckForMouseHover;
+                Mouse.MouseClicked -= _okayButton.CheckForMouseClick;
+            }
             Mouse.MouseMoved -= _cancelButton.CheckForMouseHover;
-            Mouse.MouseClicked -= _okayButton.CheckForMouseClick;
             Mouse.MouseClicked -= _cancelButton.CheckForMouseClick;
             Logger.LogVerbose("Warning Dialog - Mouse Events Deregistered.");
             _buttonClickRegistered = false;
@@ -74,8 +80,11 @@ namespace SkillPrestige.Menus.Dialogs
             var buttonSize = Game1.tileSize;
             var buttonPadding = Game1.tileSize * 4;
             var okayButtonBounds = new Rectangle(xPositionOnScreen + width - buttonSize - spaceToClearSideBorder * 3, yPositionOnScreen + height - buttonSize * 2, buttonSize, buttonSize);
-            _okayButton = new TextureButton(okayButtonBounds, Game1.mouseCursors, new Rectangle(128, 256, 64, 64), Okay, "Prestige Skill");
-            Logger.LogVerbose("Warning Dialog - Okay button instantiated.");
+            if (OnOkay != null)
+            {
+                _okayButton = new TextureButton(okayButtonBounds, Game1.mouseCursors, new Rectangle(128, 256, 64, 64), Okay, "Prestige Skill");
+                Logger.LogVerbose("Warning Dialog - Okay button instantiated.");
+            }
             var cancelButtonBounds = okayButtonBounds;
             cancelButtonBounds.X -= buttonSize + buttonPadding;
             _cancelButton = new TextureButton(cancelButtonBounds, Game1.mouseCursors, new Rectangle(192, 256, 64, 64), () => exitThisMenu(false), "Cancel");
@@ -108,9 +117,12 @@ namespace SkillPrestige.Menus.Dialogs
                     yPositionOnScreen + spaceToClearTopBorder + textPadding), Game1.textColor);
             upperRightCloseButton?.draw(spriteBatch);
             if (!_buttonsInstantiated) InstantiateButtons();
-            _okayButton.Draw(spriteBatch);
+            if (OnOkay != null)
+            {
+                _okayButton.Draw(spriteBatch);
+                _okayButton.DrawHoverText(spriteBatch);
+            }
             _cancelButton.Draw(spriteBatch);
-            _okayButton.DrawHoverText(spriteBatch);
             _cancelButton.DrawHoverText(spriteBatch);
             Mouse.DrawCursor(spriteBatch);
         }

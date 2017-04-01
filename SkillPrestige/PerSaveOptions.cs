@@ -21,6 +21,8 @@ namespace SkillPrestige
 
         public int CostOfTierTwoPrestige { get; set; }
 
+        public bool NoSacrificeMode { get; set; }
+
         private PerSaveOptions() { }
         private static PerSaveOptions _instance;
 
@@ -72,6 +74,7 @@ namespace SkillPrestige
                 Instance.ResetRecipesOnPrestige =  true;
                 Instance.CostOfTierOnePrestige =  1;
                 Instance.CostOfTierTwoPrestige =  2;
+                Instance.NoSacrificeMode = false;
                 Save();
             }
             catch(Exception exception)

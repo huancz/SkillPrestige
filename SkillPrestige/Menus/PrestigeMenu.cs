@@ -92,7 +92,7 @@ namespace SkillPrestige.Menus
         private void OpenSettingsMenu()
         {
             Logger.LogVerbose("Prestige Menu - Initiating Settings Menu...");
-            var menuWidth = Game1.tileSize * 12;
+            var menuWidth = Game1.tileSize * 14;
             var menuHeight = Game1.tileSize * 10;
             var menuXCenter = (menuWidth + borderWidth * 2) / 2;
             var menuYCenter = (menuHeight + borderWidth * 2) / 2;

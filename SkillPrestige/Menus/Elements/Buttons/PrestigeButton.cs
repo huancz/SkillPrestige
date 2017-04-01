@@ -56,11 +56,29 @@ namespace SkillPrestige.Menus.Elements.Buttons
             var bounds = new Rectangle(screenXCenter - dialogXCenter, screenYCenter - dialogYCenter,
                 dialogWidth + IClickableMenu.borderWidth * 2, dialogHeight + IClickableMenu.borderWidth * 2);
             Logger.LogVerbose($"{Skill.Type.Name} skill prestige attempted.");
-            var message = $"Are you sure you wish to prestige your {Skill.Type.Name} skill? This cannot be undone and will revert you back to level 0 {Skill.Type.Name}. All associated benefits {(PerSaveOptions.Instance.ResetRecipesOnPrestige ? "and" : "except for")} crafting/cooking recipes will be lost.";
+            string message;
+            bool allowPrestige = true;
+            if (PerSaveOptions.Instance.NoSacrificeMode)
+            {
+                var needed = 30000 - Game1.player.experiencePoints[Skill.Type.Ordinal];
+                if (needed > 0)
+                {
+                    allowPrestige = false;
+                    message = $"You need {needed} more experience point to get a prestige point in no sacrifice mode.";
+                }
+                else
+                {
+                    message = $"Good news, you have enough experience to get next prestige point.";
+                }
+            }
+            else
+            {
+                message = $"Are you sure you wish to prestige your {Skill.Type.Name} skill? This cannot be undone and will revert you back to level 0 {Skill.Type.Name}. All associated benefits {(PerSaveOptions.Instance.ResetRecipesOnPrestige ? "and" : "except for")} crafting/cooking recipes will be lost.";
+            }
             Game1.activeClickableMenu.exitThisMenuNoSound();
-            Game1.activeClickableMenu = new WarningDialog(bounds, message, () => { Prestige.PrestigeSkill(Skill); },
+            Game1.activeClickableMenu = new WarningDialog(bounds, message,
+                allowPrestige ? () => { Prestige.PrestigeSkill(Skill); } : (WarningDialog.OkayCallback)null,
                 () => { });
-            
         }
     }
 }
