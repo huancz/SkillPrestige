@@ -33,7 +33,16 @@ namespace SkillPrestige.Menus
                 var yPadding = (int) Math.Floor(Game1.tileSize * 1.05);
                 var xOffset = skillsPage.width + Game1.tileSize;
                 var bounds = new Rectangle(skillsPage.xPositionOnScreen + xOffset, skillsPage.yPositionOnScreen + yPadding + yOffset * skill.SkillScreenPosition + skill.SkillScreenPosition * height, width, height);
-                var prestigeButton = new TextureButton(bounds, SkillPrestigeMod.PrestigeIconTexture, new Rectangle(0, 0, 32, 32), () => OpenPrestigeMenu(skill), "Click to open the Prestige menu.");
+                var message = "Click to open the Prestige menu.";
+                if (PerSaveOptions.Instance.NoSacrificeMode)
+                {
+                    var needed = Math.Max(0, 30000 - Game1.player.experiencePoints[skill.Type.Ordinal]);
+                    if (needed > 0)
+                        message += $" ({needed} needed)";
+                    else
+                        message += " (eligible for prestige)";
+                }
+                var prestigeButton = new TextureButton(bounds, SkillPrestigeMod.PrestigeIconTexture, new Rectangle(0, 0, 32, 32), () => OpenPrestigeMenu(skill), message);
                 PrestigeButtons.Add(prestigeButton);
                 Logger.LogVerbose($"{skill.Type.Name} skill prestige button initiated at {bounds.X}, {bounds.Y}. Width: {bounds.Width}, Height: {bounds.Height}");
                 Mouse.MouseMoved += prestigeButton.CheckForMouseHover;
