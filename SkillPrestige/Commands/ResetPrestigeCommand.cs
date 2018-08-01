@@ -30,9 +30,9 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => true;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
-            if (e.Command.CalledArgs.Length < 1)
+            if (args.Length < 1)
             {
                 SkillPrestigeMod.LogMonitor.Log("<skill> must be specified");
                 return;
@@ -42,7 +42,7 @@ namespace SkillPrestige.Commands
                 SkillPrestigeMod.LogMonitor.Log("A game file must be loaded in order to run this command.");
                 return;
             }
-            var skillArgument = e.Command.CalledArgs[0];
+            var skillArgument = args[0];
             SkillPrestigeMod.LogMonitor.Log($"This command will reset your character's prestiged selections and prestige points for the {skillArgument} skill. " + Environment.NewLine +
                        "Please note that this command by itself will only clear the prestige data located in the skills prestige mod folder, " +
                        "and *not* the player's gained professions. once this is run all professions already prestiged/purchased will still belong to the player." + Environment.NewLine +

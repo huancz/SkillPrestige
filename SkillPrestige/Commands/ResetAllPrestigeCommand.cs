@@ -17,7 +17,7 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => true;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
             if (Game1.player == null)
             {

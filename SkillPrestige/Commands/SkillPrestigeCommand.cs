@@ -23,11 +23,6 @@ namespace SkillPrestige.Commands
         private string Description { get; }
 
         /// <summary>
-        /// The help description of the aguments in the command.
-        /// </summary>
-        private IEnumerable<string> ArgumentDescriptions { get; }
-
-        /// <summary>
         /// Whether or not the command is used only in test mode.
         /// </summary>
         protected abstract bool TestingCommand { get; }
@@ -36,24 +31,10 @@ namespace SkillPrestige.Commands
         {
             Name = name;
             Description = description;
-            ArgumentDescriptions = argumentDescriptions;
-        }
-
-        /// <summary>
-        /// Registers a command with the SMAPI console.
-        /// </summary>
-        private void RegisterCommand()
-        {
-            Logger.LogInformation($"Registering {Name} command...");
-            if (ArgumentDescriptions != null)
+            if (argumentDescriptions != null)
             {
-                Command.RegisterCommand(Name, Description, ArgumentDescriptions.ToArray()).CommandFired += ApplyCommandEffect;
+                Description += "\n" + string.Join("\n", argumentDescriptions);
             }
-            else
-            {
-                Command.RegisterCommand(Name, Description).CommandFired += ApplyCommandEffect;
-            }
-            Logger.LogInformation($"{Name} command registered.");
         }
 
         /// <summary>
@@ -61,20 +42,28 @@ namespace SkillPrestige.Commands
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected abstract void ApplyCommandEffect(object sender, EventArgsCommand e);
+        protected abstract void ApplyCommandEffect(string[] arguments);
 
         /// <summary>
         /// Registers all commands found in the system.
         /// </summary>
         /// <param name="testCommands">Whether or not you wish to only register testing commands.</param>
-        public static void RegisterCommands(bool testCommands)
+        public static void RegisterCommands(bool testCommands, IModHelper modHelper)
         {
             var concreteCommands = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypesSafely())
                 .Where(x => x.IsSubclassOf(typeof(SkillPrestigeCommand)) && !x.IsAbstract);
             foreach (var commandType in concreteCommands)
             {
                 var command = (SkillPrestigeCommand)Activator.CreateInstance(commandType);
-                if (!(testCommands ^ command.TestingCommand)) command.RegisterCommand();
+                if (!(testCommands ^ command.TestingCommand))
+                {
+                    Logger.LogInformation($"Registering {command.Name} command...");
+                    modHelper.ConsoleCommands.Add(command.Name, command.Description, (cmdText, arguments) =>
+                    {
+                        command.ApplyCommandEffect(arguments);
+                    });
+                    Logger.LogInformation($"{command.Name} command registered.");
+                }
             }
         }
     }

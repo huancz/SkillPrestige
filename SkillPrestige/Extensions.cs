@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using SkillPrestige.Logging;
 
 namespace SkillPrestige

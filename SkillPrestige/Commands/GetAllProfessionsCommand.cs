@@ -16,7 +16,7 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => true;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
             const string professionSeparator = ", ";
             if (Game1.player == null)

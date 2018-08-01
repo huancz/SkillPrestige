@@ -23,15 +23,15 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => true;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
-            if (e.Command.CalledArgs.Length <= 1)
+            if (args.Length <= 1)
             {
                 SkillPrestigeMod.LogMonitor.Log("<namespace> and <modname> must be specified");
                 return;
             }
-            var namespaceArgument = e.Command.CalledArgs[0];
-            var modNameArgument = e.Command.CalledArgs[1];
+            var namespaceArgument = args[0];
+            var modNameArgument = args[1];
             SkillPrestigeMod.LogMonitor.Log($"mod {modNameArgument} {(Type.GetType($"{namespaceArgument}.{modNameArgument}, {namespaceArgument}") == null ? "not " : string.Empty)}found.");
         }
     }

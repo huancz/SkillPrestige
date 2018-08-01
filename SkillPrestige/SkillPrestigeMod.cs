@@ -36,7 +36,7 @@ namespace SkillPrestige
 
         public static IMonitor LogMonitor { get; private set; }
 
-        public static string CurrentSaveOptionsPath { get; private set; }
+        public static string CurrentSaveOptionsPath => Path.Combine(ModPath, "psconfigs/", $@"{Game1.player.Name.RemoveNonAlphanumerics()}_{Game1.uniqueIDForThisGame}.json");
 
         public static string PerSaveOptionsDirectory { get; private set; }
 
@@ -56,10 +56,14 @@ namespace SkillPrestige
             Logger.LogInformation("Detected game entry.");
             PrestigeSaveData.Instance.Read();
             RegisterGameEvents();
+
+            GameLoaded(helper);
+            LoadSprites();
+
             Logger.LogDisplay($"{Name} version {Version} by {Author} Initialized.");
         }
 
-        private void GameLoaded(object sender, EventArgs args)
+        private void GameLoaded(IModHelper helper)
         {
             Logger.LogInformation("Detected game load.");
             if (Type.GetType("AllProfessions.AllProfessions, AllProfessions") != null)
@@ -71,17 +75,19 @@ namespace SkillPrestige
             }
             ModHandler.RegisterLoadedMods();
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse - constant is manually changed for testing.
-            if (Options.Instance.TestingMode) RegisterTestingCommands();
-            RegisterCommands();
+            if (Options.Instance.TestingMode)
+            {
+                RegisterTestingCommands(helper);
+            }
+            RegisterCommands(helper);
         }
 
         private void RegisterGameEvents()
         {
             Logger.LogInformation("Registering game events...");
-            GameEvents.GameLoaded += GameLoaded;
-            GameEvents.LoadContent += LoadSprites;
             ControlEvents.MouseChanged += MouseChanged;
-            LocationEvents.CurrentLocationChanged += LocationChanged;
+            PlayerEvents.Warped += LocationChanged;
+            LocationEvents.LocationsChanged += LocationChanged;
             GraphicsEvents.OnPostRenderGuiEvent += PostRenderGuiEvent;
             GameEvents.UpdateTick += GameUpdate;
             Logger.LogInformation("Game events registered.");
@@ -90,10 +96,8 @@ namespace SkillPrestige
         private void DeregisterGameEvents()
         {
             Logger.LogInformation("Deregistering game events...");
-            GameEvents.GameLoaded -= GameLoaded;
-            GameEvents.LoadContent -= LoadSprites;
             ControlEvents.MouseChanged -= MouseChanged;
-            LocationEvents.CurrentLocationChanged -= LocationChanged;
+            PlayerEvents.Warped -= LocationChanged;
             GraphicsEvents.OnPostRenderGuiEvent -= PostRenderGuiEvent;
             GameEvents.UpdateTick -= GameUpdate;
             Logger.LogInformation("Game events deregistered.");
@@ -107,7 +111,6 @@ namespace SkillPrestige
         private static void LocationChanged(object sender, EventArgs args)
         {
             Logger.LogVerbose("Location change detected.");
-            CurrentSaveOptionsPath = Path.Combine(ModPath, "psconfigs/", $@"{Game1.player.name.RemoveNonAlphanumerics()}_{Game1.uniqueIDForThisGame}.json");
             PrestigeSaveData.Instance.UpdateCurrentSaveFileInformation();
             PerSaveOptions.Instance.Check();
             Profession.AddMissingProfessions();
@@ -118,7 +121,7 @@ namespace SkillPrestige
             SkillsMenuExtension.AddPrestigeButtonsToMenu();
         }
 
-        private static void LoadSprites(object sender, EventArgs args)
+        private static void LoadSprites()
         {
             Logger.LogInformation("Loading sprites...");
             Button.DefaultButtonTexture = Game1.content.Load<Texture2D>(@"LooseSprites\DialogBoxGreen");
@@ -160,17 +163,17 @@ namespace SkillPrestige
             Logger.LogInformation("Replaced level up menu with custom menu.");
         }
 
-        private static void RegisterTestingCommands()
+        private static void RegisterTestingCommands(IModHelper helper)
         {
             Logger.LogInformation("Registering Testing commands...");
-            SkillPrestigeCommand.RegisterCommands(true);
+            SkillPrestigeCommand.RegisterCommands(true, helper);
             Logger.LogInformation("Testing commands registered.");
         }
 
-        private static void RegisterCommands()
+        private static void RegisterCommands(IModHelper helper)
         {
             Logger.LogInformation("Registering commands...");
-            SkillPrestigeCommand.RegisterCommands(false);
+            SkillPrestigeCommand.RegisterCommands(false, helper);
             Logger.LogInformation("Commands registered.");
         }
     }

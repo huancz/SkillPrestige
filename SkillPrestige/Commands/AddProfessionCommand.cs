@@ -30,14 +30,14 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => false;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
-            if (e.Command.CalledArgs.Length < 1)
+            if (args.Length < 1)
             {
                 SkillPrestigeMod.LogMonitor.Log("<profession> must be specified");
                 return;
             }
-            var professionArgument = e.Command.CalledArgs[0];
+            var professionArgument = args[0];
             if (!Skill.AllSkills.SelectMany(x => x.Professions).Select(x => x.DisplayName).Contains(professionArgument, StringComparer.InvariantCultureIgnoreCase))
             {
                 SkillPrestigeMod.LogMonitor.Log("<profession> is invalid");

@@ -30,21 +30,21 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => true;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
-            if (e.Command.CalledArgs.Length <= 1)
+            if (args.Length <= 1)
             {
                 SkillPrestigeMod.LogMonitor.Log("<skill> and <value> must be specified");
                 return;
             }
-            var skillArgument = e.Command.CalledArgs[0];
+            var skillArgument = args[0];
             if (!Skill.AllSkills.Select(x => x.Type.Name).Contains(skillArgument, StringComparer.InvariantCultureIgnoreCase))
             {
                 SkillPrestigeMod.LogMonitor.Log("<skill> is invalid");
                 return;
             }
             int experienceArgument;
-            if (!int.TryParse(e.Command.CalledArgs[1], out experienceArgument))
+            if (!int.TryParse(args[1], out experienceArgument))
             {
                 SkillPrestigeMod.LogMonitor.Log("experience must be an integer.");
                 return;

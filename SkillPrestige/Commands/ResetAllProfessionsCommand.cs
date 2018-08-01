@@ -19,7 +19,7 @@ namespace SkillPrestige.Commands
 
         protected override bool TestingCommand => false;
 
-        protected override void ApplyCommandEffect(object sender, EventArgsCommand e)
+        protected override void ApplyCommandEffect(string[] args)
         {
             if (Type.GetType("AllProfessions.AllProfessions, AllProfessions") != null)
             {
