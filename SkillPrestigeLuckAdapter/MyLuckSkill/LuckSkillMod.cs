@@ -25,8 +25,8 @@ namespace SkillPrestige.Mods.MyLuckSkill
                     SkillScreenPosition = 6,
                     SourceRectangleForSkillIcon = new Rectangle(64, 0, 16, 16),
                     Professions = Profession.LuckProfessions,
-                    SetSkillLevel = x => Game1.player.luckLevel = x,
-                    GetSkillLevel = () => Game1.player.luckLevel,
+                    SetSkillLevel = x => Game1.player.LuckLevel = x,
+                    GetSkillLevel = () => Game1.player.LuckLevel,
                     SetSkillExperience = SetLuckExperience,
                     LevelUpManager = new LevelUpManager
                     {

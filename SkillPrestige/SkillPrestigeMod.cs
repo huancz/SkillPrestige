@@ -28,7 +28,7 @@ namespace SkillPrestige
 
         public static IMonitor LogMonitor { get; private set; }
 
-        public static string CurrentSaveOptionsPath { get; private set; }
+        public static string CurrentSaveOptionsPath => Path.Combine(ModPath, "psconfigs/", $@"{Game1.player.Name.RemoveNonAlphanumerics()}_{Game1.uniqueIDForThisGame}.json");
 
         public static string PerSaveOptionsDirectory { get; private set; }
 
@@ -73,7 +73,7 @@ namespace SkillPrestige
         {
             Logger.LogInformation("Registering game events...");
             ControlEvents.MouseChanged += MouseChanged;
-            LocationEvents.CurrentLocationChanged += LocationChanged;
+            PlayerEvents.Warped += LocationChanged;
             GraphicsEvents.OnPostRenderGuiEvent += PostRenderGuiEvent;
             GameEvents.UpdateTick += GameUpdate;
             GameEvents.HalfSecondTick += HalfSecondTick;
@@ -92,7 +92,6 @@ namespace SkillPrestige
         private static void LocationChanged(object sender, EventArgs args)
         {
             Logger.LogVerbose("Location change detected.");
-            CurrentSaveOptionsPath = Path.Combine(ModPath, "psconfigs/", $@"{Game1.player.name.RemoveNonAlphanumerics()}_{Game1.uniqueIDForThisGame}.json");
             PrestigeSaveData.Instance.UpdateCurrentSaveFileInformation();
             PerSaveOptions.Instance.Check();
             Profession.AddMissingProfessions();
