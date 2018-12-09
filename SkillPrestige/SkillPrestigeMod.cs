@@ -89,7 +89,7 @@ namespace SkillPrestige
             HandleState(args);
         }
 
-        private static void LocationChanged(object sender, EventArgs args)
+        private static void LocationChanged(object sender, EventArgsPlayerWarped args)
         {
             Logger.LogVerbose("Location change detected.");
             PrestigeSaveData.Instance.UpdateCurrentSaveFileInformation();
